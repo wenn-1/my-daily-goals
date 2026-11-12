@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5e8df">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="我的每日目标">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>我的每日目标</title>
+<style>
+:root{--ink:#202b3c;--muted:#718096;--orange:#ef704c;--cream:#f7eee7;--line:#ffffffb8}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:linear-gradient(145deg,#e7e9e7,#f6dcd3 48%,#d7e8e5);min-height:100vh}
+main{max-width:760px;margin:auto;padding:18px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 4px 18px}
+h1{font-size:25px;margin:0;font-weight:850;letter-spacing:.3px}.date{color:var(--muted);font-size:14px;margin-top:5px}
+.pill{border:0;border-radius:24px;background:#fff9;padding:11px 16px;color:var(--ink);font-weight:700}
+.card{background:#fff9;border:1px solid var(--line);border-radius:27px;padding:22px;margin:0 0 15px;box-shadow:0 8px 24px #44556610;backdrop-filter:blur(12px)}
+.hero{background:linear-gradient(125deg,#f8e0d8ed,#f5eee4ed)}.eyebrow{font-size:14px;color:#617286}
+h2{font-size:29px;line-height:1.25;margin:10px 0}.sub{color:var(--muted);font-size:14px}
+.progress{height:10px;background:#d9dfe0;border-radius:20px;overflow:hidden;margin:18px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#ed7653,#ef704c);border-radius:20px;width:0}
+.checks{display:flex;gap:9px;flex-wrap:wrap}.check{border:0;border-radius:22px;background:#fff;padding:10px 15px;color:var(--orange);font-weight:750;box-shadow:0 3px 10px #3331}.check.done{background:#fff0e9;outline:2px solid #efb19d}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.tile{min-height:165px}.tilehead{display:flex;align-items:center;gap:9px;color:#65768a;font-weight:700;font-size:14px}.emoji{width:40px;height:40px;border-radius:15px;background:#f6e5d9;display:grid;place-items:center;font-size:20px}
+.value{font-size:30px;font-weight:850;margin:14px 0 5px}.tile input,.field input,.field select{width:100%;border:1px solid #d9dfdf;border-radius:13px;padding:11px;background:#fff9;font-size:16px;color:var(--ink);margin-top:7px}
+.field{margin-top:12px}.field label{font-size:13px;color:var(--muted);font-weight:650}
+button{cursor:pointer} .action{border:0;border-radius:15px;background:var(--orange);color:white;padding:12px 17px;font-weight:750;margin-top:12px}
+.section-title{font-size:20px;font-weight:850;margin:23px 4px 12px}
+.note{font-size:12px;color:#758396;text-align:center;padding:12px}
+.history{white-space:pre-wrap;font-size:13px;color:#64748b;line-height:1.6}
+@media(max-width:390px){main{padding:12px}.card{padding:18px}.grid{gap:10px}.value{font-size:26px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><h1>我的每日目标</h1><div class="date" id="today"></div></div><button class="pill" id="resetDay">今日重置</button></header>
+<section class="card hero">
+<div class="eyebrow">每日状态 · 稳定进步</div>
+<h2 id="headline">今天也要保持好状态</h2>
+<div class="sub" id="profileLine">记录你的训练、饮食、英语与睡眠</div>
+<div class="progress"><span id="dailyBar"></span></div>
+<div class="checks" id="checks"></div>
+</section>
+<div class="grid">
+<section class="card tile">
+<div class="tilehead"><span class="emoji">🥚</span>今日蛋白质</div>
+<div class="value"><span id="proteinVal">0</span> g</div>
+<div class="sub">目标 <span id="proteinGoalText">120</span> g</div>
+<div class="progress"><span id="proteinBar"></span></div>
+<div class="field"><label>新增蛋白质（克）</label><input id="proteinAdd" type="number" min="0" placeholder="例如 25"></div>
+<button class="action" id="addProtein">记录摄入</button>
+</section>
+<section class="card tile">
+<div class="tilehead"><span class="emoji">🏋️</span>今日训练</div>
+<div class="value" id="workoutValue">未记录</div>
+<div class="sub">记录训练内容与时长</div>
+<div class="field"><input id="workoutName" placeholder="例如：胸 + 三头"></div>
+<div class="field"><input id="workoutMinutes" type="number" min="0" placeholder="训练分钟数"></div>
+<button class="action" id="saveWorkout">保存训练</button>
+</section>
+<section class="card tile">
+<div class="tilehead"><span class="emoji">📚</span>英语学习</div>
+<div class="value"><span id="englishVal">0</span> 分钟</div>
+<div class="sub">累计新词 <span id="wordsVal">0</span> 个</div>
+<div class="field"><input id="englishAdd" type="number" min="0" placeholder="本次学习分钟数"></div>
+<div class="field"><input id="wordsAdd" type="number" min="0" placeholder="新增单词数"></div>
+<button class="action" id="addEnglish">记录学习</button>
+</section>
+<section class="card tile">
+<div class="tilehead"><span class="emoji">🌙</span>昨晚睡眠</div>
+<div class="value"><span id="sleepVal">—</span><small style="font-size:16px"> 小时</small></div>
+<div class="sub">建议目标 7–9 小时</div>
+<div class="field"><input id="sleepInput" type="number" min="0" max="24" step=".5" placeholder="例如 7.5"></div>
+<button class="action" id="saveSleep">保存睡眠</button>
+</section>
+</div>
+<div class="section-title">身体数据</div>
+<section class="card">
+<div class="grid">
+<div class="field"><label>体重（kg）</label><input id="weight" type="number" step=".1" placeholder="例如 72.5"></div>
+<div class="field"><label>身高（cm）</label><input id="height" type="number" placeholder="例如 183"></div>
+</div>
+<button class="action" id="saveBody">保存身体数据</button>
+<div class="sub" id="bodySummary" style="margin-top:12px">填写身高和体重，开始追踪变化。</div>
+</section>
+<div class="section-title">今日记录</div>
+<section class="card"><div class="history" id="history">还没有记录。完成一项后会显示在这里。</div></section>
+<div class="note">数据保存在当前设备浏览器中。请定期导出备份；清除浏览器数据可能导致记录丢失。</div>
+</main>
+<script>
+const KEY='daily-goals-v1';
+const tasks=['训练','饮食','英语','睡眠'];
+const todayKey=()=>new Date().toLocaleDateString('sv-SE');
+const fresh=()=>({date:todayKey(),checks:{},protein:0,proteinGoal:120,english:0,words:0,sleep:null,workout:'',minutes:0,weight:'',height:'',logs:[]});
+let data;
+try{data=JSON.parse(localStorage.getItem(KEY))||fresh()}catch{data=fresh()}
+if(data.date!==todayKey()){data={...fresh(),weight:data.weight,height:data.height,logs:data.logs||[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function log(s){data.logs.unshift(new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+' · '+s);data.logs=data.logs.slice(0,30)}
+function render(){
+ document.getElementById('today').textContent=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+ document.getElementById('checks').innerHTML=tasks.map(t=>`<button class="check ${data.checks[t]?'done':''}" data-task="${t}">${data.checks[t]?'✓':'○'} ${t}</button>`).join('');
+ document.querySelectorAll('[data-task]').forEach(b=>b.onclick=()=>{let t=b.dataset.task;data.checks[t]=!data.checks[t];log((data.checks[t]?'完成':'取消')+t+'打卡');save()});
+ let count=tasks.filter(t=>data.checks[t]).length;document.getElementById('dailyBar').style.width=count*25+'%';
+ document.getElementById('headline').textContent=count===4?'今天全勤，状态拉满':`今日完成 ${count}/4 项，继续加油`;
+ document.getElementById('proteinVal').textContent=data.protein;document.getElementById('proteinGoalText').textContent=data.proteinGoal;document.getElementById('proteinBar').style.width=Math.min(100,data.protein/data.proteinGoal*100)+'%';
+ document.getElementById('workoutValue').textContent=data.workout||'未记录';document.getElementById('englishVal').textContent=data.english;document.getElementById('wordsVal').textContent=data.words;document.getElementById('sleepVal').textContent=data.sleep??'—';
+ document.getElementById('weight').value=data.weight||'';document.getElementById('height').value=data.height||'';
+ document.getElementById('bodySummary').textContent=data.weight&&data.height?`当前 ${data.height} cm · ${data.weight} kg · BMI ${(data.weight/((data.height/100)**2)).toFixed(1)}`:'填写身高和体重，开始追踪变化。';
+ document.getElementById('history').textContent=data.logs.length?data.logs.join('\\n'):'还没有记录。完成一项后会显示在这里。';
+}
+document.getElementById('addProtein').onclick=()=>{let n=Number(proteinAdd.value);if(n>0){data.protein+=n;log('蛋白质摄入 '+n+' g');proteinAdd.value='';save()}};
+document.getElementById('saveWorkout').onclick=()=>{let n=workoutName.value.trim(),m=Number(workoutMinutes.value)||0;if(n){data.workout=n;data.minutes=m;data.checks['训练']=true;log(`训练：${n}（${m} 分钟）`);save()}};
+document.getElementById('addEnglish').onclick=()=>{let m=Number(englishAdd.value)||0,w=Number(wordsAdd.value)||0;if(m||w){data.english+=m;data.words+=w;data.checks['英语']=true;log(`英语学习 ${m} 分钟，新增单词 ${w} 个`);save()}};
+document.getElementById('saveSleep').onclick=()=>{let n=Number(sleepInput.value);if(n>0&&n<=24){data.sleep=n;data.checks['睡眠']=true;log('睡眠记录 '+n+' 小时');save()}};
+document.getElementById('saveBody').onclick=()=>{data.weight=weight.value;data.height=height.value;log('更新身体数据');save()};
+document.getElementById('resetDay').onclick=()=>{if(confirm('重置今天的打卡和每日数据？身体数据与历史记录会保留。')){let keep={weight:data.weight,height:data.height,logs:data.logs};data={...fresh(),...keep};save()}};
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
